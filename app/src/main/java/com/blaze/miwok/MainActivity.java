@@ -3,6 +3,7 @@ package com.blaze.miwok;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -12,25 +13,35 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-    }
 
-    //Opens Numbers List activity
-    public void openNumbersList(View view) {
-        startActivity(new Intent(this, NumbersActivity.class));
-    }
+        TextView numbers = findViewById(R.id.numbers);
+        numbers.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(MainActivity.this, NumbersActivity.class));
+            }
+        });
 
-    //Opens Family Members List activity
-    public void openFamilyMembersList(View view) {
-        startActivity(new Intent(this, FamilyActivity.class));
-    }
-
-    //Opens Colors List activity
-    public void openColorsList(View view) {
-        startActivity(new Intent(this, ColorsActivity.class));
-    }
-
-    //Opens Phrases List activity
-    public void openPhrasesList(View view) {
-        startActivity(new Intent(this, PhrasesActivity.class));
+        TextView family = findViewById(R.id.family);
+        family.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(MainActivity.this, FamilyActivity.class));
+            }
+        });
+        TextView colors = findViewById(R.id.colors);
+        colors.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(MainActivity.this, ColorsActivity.class));
+            }
+        });
+        TextView phrases = findViewById(R.id.phrases);
+        phrases.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(MainActivity.this, PhrasesActivity.class));
+            }
+        });
     }
 }
