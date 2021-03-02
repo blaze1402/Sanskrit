@@ -1,4 +1,4 @@
-package com.blaze.miwok;
+package com.blaze.sanskrit;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -6,6 +6,8 @@ import android.view.View;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.blaze.sanskrit.R;
 
 public class MainActivity extends AppCompatActivity {
 

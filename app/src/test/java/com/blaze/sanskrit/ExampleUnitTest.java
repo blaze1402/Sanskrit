@@ -1,4 +1,4 @@
-package com.blaze.miwok;
+package com.blaze.sanskrit;
 
 import org.junit.Test;
 
