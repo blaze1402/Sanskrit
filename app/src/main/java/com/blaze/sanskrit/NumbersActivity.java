@@ -12,9 +12,9 @@ public class NumbersActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_numbers);
+        setContentView(R.layout.word_list);
 
-        //Array List of numbers in english
+        //Array List of numbers in english and sanskrit
         ArrayList<Word> words = new ArrayList<Word>();
 
         words.add(new Word("One", "ekam"));
