@@ -15,9 +15,10 @@ import java.util.ArrayList;
 
 
 public class WordAdapter extends ArrayAdapter<Word> {
-
-    public WordAdapter(@NonNull Activity context, ArrayList<Word> words) {
+    private int mcolorResourceID;
+    public WordAdapter(@NonNull Activity context, ArrayList<Word> words, int colorResourceID) {
         super(context, 0, words);
+        mcolorResourceID=colorResourceID;
     }
 
     @NonNull
@@ -38,8 +39,13 @@ public class WordAdapter extends ArrayAdapter<Word> {
         sanskritTranslation.setText(currentPosition.getSanskritTranslation());
 
         ImageView imageView = listItemView.findViewById(R.id.image);
-        imageView.setImageResource(currentPosition.getImageResourceID());
-
+        if(currentPosition.hasImage()){
+            imageView.setImageResource(currentPosition.getImageResourceID());
+            imageView.setVisibility(View.VISIBLE);
+        }else {
+            imageView.setVisibility(View.GONE);
+        }
+        listItemView.setBackgroundResource(mcolorResourceID);
         return listItemView;
     }
 }

@@ -6,7 +6,7 @@ public class Word {
 
     private final String mSanskritTranslation;
 
-    private int mImageResourceID;
+    private int mImageResourceID=0;
 
     public Word(String defaultTranslation, String sanskritTranslation) {
         mDefaultTranslation = defaultTranslation;
@@ -30,5 +30,7 @@ public class Word {
     public int getImageResourceID() {
         return mImageResourceID;
     }
-
+    public boolean hasImage(){
+        return mImageResourceID!=0;
+    }
 }

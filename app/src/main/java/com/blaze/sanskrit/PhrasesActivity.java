@@ -28,7 +28,7 @@ public class PhrasesActivity extends AppCompatActivity {
         words.add(new Word("Is there any restaurant nearby?", "Atra samīpē kō'api bhōjanālayaḥ asti."));
         words.add(new Word("Is there a first aid box?", "Kiṁ atra prāthamika aupacāra pēṭikā asti"));
 
-        WordAdapter adapter = new WordAdapter(this, words);
+        WordAdapter adapter = new WordAdapter(this, words,R.color.category_phrases);
         ListView listView = findViewById(R.id.list);
         listView.setAdapter(adapter);
     }
