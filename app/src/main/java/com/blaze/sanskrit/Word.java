@@ -6,9 +6,17 @@ public class Word {
 
     private final String mSanskritTranslation;
 
+    private int mImageResourceID;
+
     public Word(String defaultTranslation, String sanskritTranslation) {
         mDefaultTranslation = defaultTranslation;
         mSanskritTranslation = sanskritTranslation;
+    }
+
+    public Word(String defaultTranslation, String sanskritTranslation, int imageResourceID) {
+        mDefaultTranslation = defaultTranslation;
+        mSanskritTranslation = sanskritTranslation;
+        mImageResourceID = imageResourceID;
     }
 
     public String getDefaultTranslation() {
@@ -18,4 +26,9 @@ public class Word {
     public String getSanskritTranslation() {
         return mSanskritTranslation;
     }
+
+    public int getImageResourceID() {
+        return mImageResourceID;
+    }
+
 }
