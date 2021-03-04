@@ -6,9 +6,9 @@ public class Word {
 
     private final String mSanskritTranslation;
 
-    private int mImageResourceID=0;
+    private int mImageResourceID = 0;
 
-    private int mAudioResourceID;
+    private final int mAudioResourceID;
 
     public Word(String defaultTranslation, String sanskritTranslation, int audioResourceID) {
         mDefaultTranslation = defaultTranslation;
@@ -34,8 +34,9 @@ public class Word {
     public int getImageResourceID() {
         return mImageResourceID;
     }
-    public boolean hasImage(){
-        return mImageResourceID!=0;
+
+    public boolean hasImage() {
+        return mImageResourceID != 0;
     }
 
     public int getAudioResourceID() {

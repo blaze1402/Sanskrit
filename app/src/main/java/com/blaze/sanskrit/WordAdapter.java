@@ -1,7 +1,6 @@
 package com.blaze.sanskrit;
 
 import android.app.Activity;
-import android.media.MediaPlayer;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,10 +15,11 @@ import java.util.ArrayList;
 
 
 public class WordAdapter extends ArrayAdapter<Word> {
-    private int mcolorResourceID;
+    private final int mcolorResourceID;
+
     public WordAdapter(@NonNull Activity context, ArrayList<Word> words, int colorResourceID) {
         super(context, 0, words);
-        mcolorResourceID=colorResourceID;
+        mcolorResourceID = colorResourceID;
     }
 
     @NonNull
@@ -40,10 +40,10 @@ public class WordAdapter extends ArrayAdapter<Word> {
         sanskritTranslation.setText(currentPosition.getSanskritTranslation());
 
         ImageView imageView = listItemView.findViewById(R.id.image);
-        if(currentPosition.hasImage()){
+        if (currentPosition.hasImage()) {
             imageView.setImageResource(currentPosition.getImageResourceID());
             imageView.setVisibility(View.VISIBLE);
-        }else {
+        } else {
             imageView.setVisibility(View.GONE);
         }
 
