@@ -1,6 +1,7 @@
 package com.blaze.sanskrit;
 
 import android.app.Activity;
+import android.media.MediaPlayer;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -45,7 +46,9 @@ public class WordAdapter extends ArrayAdapter<Word> {
         }else {
             imageView.setVisibility(View.GONE);
         }
+
         listItemView.setBackgroundResource(mcolorResourceID);
+
         return listItemView;
     }
 }
