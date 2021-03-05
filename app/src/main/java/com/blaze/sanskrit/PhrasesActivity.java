@@ -1,12 +1,18 @@
 package com.blaze.sanskrit;
 
+import android.content.Context;
+import android.media.AudioAttributes;
+import android.media.AudioFocusRequest;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.ImageView;
 import android.widget.ListView;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
 import java.util.ArrayList;
@@ -14,17 +20,53 @@ import java.util.ArrayList;
 public class PhrasesActivity extends AppCompatActivity {
 
     private MediaPlayer mMediaPlayer;
-    private final MediaPlayer.OnCompletionListener onCompletionListener = new MediaPlayer.OnCompletionListener() {
+    private AudioManager mAudioManager;
+    private AudioAttributes mAudioAttributes;
+    private int mAudioFocusRequest;
+    private AudioFocusRequest mFocusRequest = null;
+
+    AudioManager.OnAudioFocusChangeListener mOnAudioFocusChangeListener = new AudioManager.OnAudioFocusChangeListener() {
+        @RequiresApi(api = Build.VERSION_CODES.O)
         @Override
-        public void onCompletion(MediaPlayer mp) {
-            releaseMediaPlayer();
+        public void onAudioFocusChange(int focusChange) {
+            if (focusChange == AudioManager.AUDIOFOCUS_GAIN) {
+                mMediaPlayer.start();
+            } else if (focusChange == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT ||
+                    focusChange == AudioManager.AUDIOFOCUS_GAIN_TRANSIENT_MAY_DUCK) {
+                mMediaPlayer.pause();
+                mMediaPlayer.seekTo(0);
+            } else if (focusChange == AudioManager.AUDIOFOCUS_LOSS) {
+                releaseMediaPlayer();
+            }
         }
     };
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.word_list);
+
+        // get the audio system service for
+        // the audioManger instance
+        mAudioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+
+        // initiate the audio playback attributes
+        mAudioAttributes = new AudioAttributes.Builder()
+                .setUsage(AudioAttributes.USAGE_GAME)
+                .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
+                .build();
+
+        // set the playback attributes for the focus requester
+        mFocusRequest = new AudioFocusRequest.Builder(AudioManager.AUDIOFOCUS_GAIN)
+                .setAudioAttributes(mAudioAttributes)
+                .setAcceptsDelayedFocusGain(true)
+                .setOnAudioFocusChangeListener(mOnAudioFocusChangeListener)
+                .build();
+
+        // request the audio focus and
+        // store it in the int variable
+        mAudioFocusRequest = mAudioManager.requestAudioFocus(mFocusRequest);
 
         //Array List of phrases in english, sanskrit and their audio file
         final ArrayList<Word> words = new ArrayList<Word>();
@@ -59,14 +101,24 @@ public class PhrasesActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Word word = words.get(position);
                 releaseMediaPlayer();
-                mMediaPlayer = MediaPlayer.create(PhrasesActivity.this, word.getAudioResourceID());
-                mMediaPlayer.start();
-
-                mMediaPlayer.setOnCompletionListener(onCompletionListener);
+                if (mAudioFocusRequest == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
+                    mMediaPlayer = MediaPlayer.create(PhrasesActivity.this, word.getAudioResourceID());
+                    mMediaPlayer.start();
+                    ImageView play = view.findViewById(R.id.play);
+                    play.setImageResource(R.drawable.ic_pause);
+                    mMediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                        @Override
+                        public void onCompletion(MediaPlayer mp) {
+                            play.setImageResource(R.drawable.ic_play);
+                            releaseMediaPlayer();
+                        }
+                    });
+                }
             }
         });
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void onStop() {
         super.onStop();
@@ -76,6 +128,7 @@ public class PhrasesActivity extends AppCompatActivity {
     /**
      * Clean up the media player by releasing its resources.
      */
+    @RequiresApi(api = Build.VERSION_CODES.O)
     private void releaseMediaPlayer() {
         // If the media player is not null, then it may be currently playing a sound.
         if (mMediaPlayer != null) {
@@ -87,6 +140,8 @@ public class PhrasesActivity extends AppCompatActivity {
             // setting the media player to null is an easy way to tell that the media player
             // is not configured to play an audio file at the moment.
             mMediaPlayer = null;
+
+            mAudioManager.abandonAudioFocusRequest(mFocusRequest);
         }
     }
 }
