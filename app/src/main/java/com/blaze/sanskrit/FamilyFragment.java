@@ -7,17 +7,19 @@ import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Build;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.ListView;
 
 import androidx.annotation.RequiresApi;
-import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
 
 import java.util.ArrayList;
 
-public class ColorsActivity extends AppCompatActivity {
+public class FamilyFragment extends Fragment {
 
     private MediaPlayer mMediaPlayer;
     private AudioManager mAudioManager;
@@ -51,74 +53,7 @@ public class ColorsActivity extends AppCompatActivity {
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.word_list);
-
-        // get the audio system service for
-        // the audioManger instance
-        mAudioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
-
-        // initiate the audio playback attributes
-        mAudioAttributes = new AudioAttributes.Builder()
-                .setUsage(AudioAttributes.USAGE_GAME)
-                .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
-                .build();
-
-        // set the playback attributes for the focus requester
-        mFocusRequest = new AudioFocusRequest.Builder(AudioManager.AUDIOFOCUS_GAIN)
-                .setAudioAttributes(mAudioAttributes)
-                .setAcceptsDelayedFocusGain(true)
-                .setOnAudioFocusChangeListener(mOnAudioFocusChangeListener)
-                .build();
-
-        // request the audio focus and
-        // store it in the int variable
-        mAudioFocusRequest = mAudioManager.requestAudioFocus(mFocusRequest);
-
-        //Array List of Colors in english, sanskrit and their audio file
-        final ArrayList<Word> words = new ArrayList<Word>();
-
-        words.add(new Word("Black", "kṛṣṇaḥ", R.drawable.color_black, R.raw.color_black));
-        words.add(new Word("Blue", "nīlaḥ", R.drawable.color_blue, R.raw.color_blue));
-        words.add(new Word("Brown", "pāhataḥ", R.drawable.color_brown, R.raw.color_brown));
-        words.add(new Word("Green", "haritaḥ", R.drawable.color_green, R.raw.color_green));
-        words.add(new Word("Orange", "pītaraktaḥ", R.drawable.color_orange, R.raw.color_orange));
-        words.add(new Word("Pink", "pāṭalaḥ", R.drawable.color_pink, R.raw.color_pink));
-        words.add(new Word("Purple", "nīlalōhita", R.drawable.color_purple, R.raw.color_purple));
-        words.add(new Word("Red", "raktaḥ", R.drawable.color_red, R.raw.color_red));
-        words.add(new Word("White", "śvetaḥ", R.drawable.color_white, R.raw.color_white));
-        words.add(new Word("Yellow", "pītaḥ", R.drawable.color_yellow, R.raw.color_yellow));
-
-        WordAdapter adapter = new WordAdapter(this, words, R.color.category_colors);
-        ListView listView = findViewById(R.id.list);
-        listView.setAdapter(adapter);
-
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Word word = words.get(position);
-                releaseMediaPlayer();
-                if (mAudioFocusRequest == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
-                    mMediaPlayer = MediaPlayer.create(ColorsActivity.this, word.getAudioResourceID());
-                    mMediaPlayer.start();
-                    ImageView play = view.findViewById(R.id.play);
-                    play.setImageResource(R.drawable.ic_pause);
-                    mMediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                        @Override
-                        public void onCompletion(MediaPlayer mp) {
-                            play.setImageResource(R.drawable.ic_play);
-                            releaseMediaPlayer();
-                        }
-                    });
-                }
-            }
-        });
-    }
-
-    @RequiresApi(api = Build.VERSION_CODES.O)
-    @Override
-    protected void onStop() {
+    public void onStop() {
         super.onStop();
         releaseMediaPlayer();
     }
@@ -141,5 +76,74 @@ public class ColorsActivity extends AppCompatActivity {
 
             mAudioManager.abandonAudioFocusRequest(mFocusRequest);
         }
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        View rootView = inflater.inflate(R.layout.word_list, container, false);
+
+        // get the audio system service for
+        // the audioManger instance
+        mAudioManager = (AudioManager) getActivity().getSystemService(Context.AUDIO_SERVICE);
+
+        // initiate the audio playback attributes
+        mAudioAttributes = new AudioAttributes.Builder()
+                .setUsage(AudioAttributes.USAGE_GAME)
+                .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
+                .build();
+
+        // set the playback attributes for the focus requester
+        mFocusRequest = new AudioFocusRequest.Builder(AudioManager.AUDIOFOCUS_GAIN)
+                .setAudioAttributes(mAudioAttributes)
+                .setAcceptsDelayedFocusGain(true)
+                .setOnAudioFocusChangeListener(mOnAudioFocusChangeListener)
+                .build();
+
+        // request the audio focus and
+        // store it in the int variable
+        mAudioFocusRequest = mAudioManager.requestAudioFocus(mFocusRequest);
+
+        //Array List of Family Members in english, sanskrit and their audio file
+        final ArrayList<Word> words = new ArrayList<Word>();
+
+        words.add(new Word("Mother", "Mātā", R.drawable.family_mother, R.raw.family_mother));
+        words.add(new Word("Father", "Pitā", R.drawable.family_father, R.raw.family_father));
+        words.add(new Word("Daughter", "Putrī", R.drawable.family_daughter, R.raw.family_daughter));
+        words.add(new Word("Son", "Putraḥ", R.drawable.family_son, R.raw.family_son));
+        words.add(new Word("Aunt", "Pitṛvyā", R.drawable.family_aunt, R.raw.family_aunt));
+        words.add(new Word("Uncle", "Pitṛvyaḥ", R.drawable.family_uncle, R.raw.family_uncle));
+        words.add(new Word("Niece", "Bhrātṛjā", R.drawable.family_niece, R.raw.family_niece));
+        words.add(new Word("Nephew", "Bhrātṛjāḥ", R.drawable.family_nephew, R.raw.family_nephew));
+        words.add(new Word("Grand Mother", "Pitāmahī", R.drawable.family_grandmother, R.raw.family_grandmother));
+        words.add(new Word("Grand Father", "Pitāmahaḥ", R.drawable.family_grandfather, R.raw.family_grandfather));
+
+        WordAdapter adapter = new WordAdapter(getActivity(), words, R.color.category_family);
+        ListView listView = rootView.findViewById(R.id.list);
+        listView.setAdapter(adapter);
+
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Word word = words.get(position);
+                releaseMediaPlayer();
+                if (mAudioFocusRequest == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
+                    mMediaPlayer = MediaPlayer.create(getActivity(), word.getAudioResourceID());
+                    mMediaPlayer.start();
+                    ImageView play = view.findViewById(R.id.play);
+                    play.setImageResource(R.drawable.ic_pause);
+                    mMediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                        @Override
+                        public void onCompletion(MediaPlayer mp) {
+                            play.setImageResource(R.drawable.ic_play);
+                            releaseMediaPlayer();
+                        }
+                    });
+                }
+            }
+        });
+
+        return rootView;
     }
 }

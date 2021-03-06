@@ -7,17 +7,19 @@ import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Build;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.ListView;
 
 import androidx.annotation.RequiresApi;
-import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
 
 import java.util.ArrayList;
 
-public class PhrasesActivity extends AppCompatActivity {
+public class NumbersFragment extends Fragment {
 
     private MediaPlayer mMediaPlayer;
     private AudioManager mAudioManager;
@@ -41,86 +43,17 @@ public class PhrasesActivity extends AppCompatActivity {
         }
     };
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.word_list);
-
-        // get the audio system service for
-        // the audioManger instance
-        mAudioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
-
-        // initiate the audio playback attributes
-        mAudioAttributes = new AudioAttributes.Builder()
-                .setUsage(AudioAttributes.USAGE_GAME)
-                .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
-                .build();
-
-        // set the playback attributes for the focus requester
-        mFocusRequest = new AudioFocusRequest.Builder(AudioManager.AUDIOFOCUS_GAIN)
-                .setAudioAttributes(mAudioAttributes)
-                .setAcceptsDelayedFocusGain(true)
-                .setOnAudioFocusChangeListener(mOnAudioFocusChangeListener)
-                .build();
-
-        // request the audio focus and
-        // store it in the int variable
-        mAudioFocusRequest = mAudioManager.requestAudioFocus(mFocusRequest);
-
-        //Array List of phrases in english, sanskrit and their audio file
-        final ArrayList<Word> words = new ArrayList<Word>();
-
-        words.add(new Word("Good morning", "Śuprabhātam",
-                R.raw.phrases_goodmorning));
-        words.add(new Word("Is there a market nearby?", "Kiṁ āpaṇaṁ samīpē asti.",
-                R.raw.phrases_isthereamarketnearby));
-        words.add(new Word("Where is the nearest bank?", "Sarva samīpaṁ kaḥ vittakōṣaḥ asti",
-                R.raw.phrases_whereisthenearestbank));
-        words.add(new Word("I have to check in my bags.", "Mama syūtāḥ nirikṣaṇa karaṇīyam.",
-                R.raw.phrases_ihavetocheckinmybags));
-        words.add(new Word("How much is insurance?", "Tasya vinimayaḥ kiyata asti.",
-                R.raw.phrases_howmuchisinsurance));
-        words.add(new Word("I need to see a doctor.", "Mahyaṁ cikitsakāt milaniyaḥ.",
-                R.raw.phrases_ineedtoseeadoctor));
-        words.add(new Word("I need to make a phone call.", "Mahyaṁ dūravāṇī karaṇīyam.",
-                R.raw.phrases_ineedtomakeaphonecall));
-        words.add(new Word("It's raining outside.", "Atra vahiḥ vr̥ṣṭiḥ bhavati",
-                R.raw.phrases_itsrainingoutside));
-        words.add(new Word("Is there any restaurant nearby?", "Atra samīpē kō'api bhōjanālayaḥ asti.",
-                R.raw.phrases_isthereanyrestaurantnearby));
-        words.add(new Word("Is there a first aid box?", "Kiṁ atra prāthamika aupacāra pēṭikā asti",
-                R.raw.phrases_isthereafirstaidbox));
-
-        WordAdapter adapter = new WordAdapter(this, words, R.color.category_phrases);
-        ListView listView = findViewById(R.id.list);
-        listView.setAdapter(adapter);
-
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Word word = words.get(position);
-                releaseMediaPlayer();
-                if (mAudioFocusRequest == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
-                    mMediaPlayer = MediaPlayer.create(PhrasesActivity.this, word.getAudioResourceID());
-                    mMediaPlayer.start();
-                    ImageView play = view.findViewById(R.id.play);
-                    play.setImageResource(R.drawable.ic_pause);
-                    mMediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                        @Override
-                        public void onCompletion(MediaPlayer mp) {
-                            play.setImageResource(R.drawable.ic_play);
-                            releaseMediaPlayer();
-                        }
-                    });
-                }
-            }
-        });
-    }
+    private final MediaPlayer.OnCompletionListener onCompletionListener = new MediaPlayer.OnCompletionListener() {
+        @RequiresApi(api = Build.VERSION_CODES.O)
+        @Override
+        public void onCompletion(MediaPlayer mp) {
+            releaseMediaPlayer();
+        }
+    };
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
-    protected void onStop() {
+    public void onStop() {
         super.onStop();
         releaseMediaPlayer();
     }
@@ -143,5 +76,73 @@ public class PhrasesActivity extends AppCompatActivity {
 
             mAudioManager.abandonAudioFocusRequest(mFocusRequest);
         }
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        View rootView = inflater.inflate(R.layout.word_list, container, false);
+
+        // get the audio system service for
+        // the audioManger instance
+        mAudioManager = (AudioManager) getActivity().getSystemService(Context.AUDIO_SERVICE);
+
+        // initiate the audio playback attributes
+        mAudioAttributes = new AudioAttributes.Builder()
+                .setUsage(AudioAttributes.USAGE_GAME)
+                .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
+                .build();
+
+        // set the playback attributes for the focus requester
+        mFocusRequest = new AudioFocusRequest.Builder(AudioManager.AUDIOFOCUS_GAIN)
+                .setAudioAttributes(mAudioAttributes)
+                .setAcceptsDelayedFocusGain(true)
+                .setOnAudioFocusChangeListener(mOnAudioFocusChangeListener)
+                .build();
+
+        // request the audio focus and
+        // store it in the int variable
+        mAudioFocusRequest = mAudioManager.requestAudioFocus(mFocusRequest);
+
+        //Array List of numbers in english, sanskrit and their audio file
+        final ArrayList<Word> words = new ArrayList<Word>();
+
+        words.add(new Word("One", "ekam", R.drawable.number_one, R.raw.number_one));
+        words.add(new Word("Two", "dve", R.drawable.number_two, R.raw.number_two));
+        words.add(new Word("Three", "trīṇi", R.drawable.number_three, R.raw.number_three));
+        words.add(new Word("Four", "catvāri", R.drawable.number_four, R.raw.number_four));
+        words.add(new Word("Five", "pañca", R.drawable.number_five, R.raw.number_five));
+        words.add(new Word("Six", "ṣaṭ", R.drawable.number_six, R.raw.number_six));
+        words.add(new Word("Seven", "sapta", R.drawable.number_seven, R.raw.number_seven));
+        words.add(new Word("Eight", "aṣṭa", R.drawable.number_eight, R.raw.number_eight));
+        words.add(new Word("Nine", "nava", R.drawable.number_nine, R.raw.number_nine));
+        words.add(new Word("Ten", "daśa", R.drawable.number_ten, R.raw.number_ten));
+
+        WordAdapter adapter = new WordAdapter(getActivity(), words, R.color.category_numbers);
+        ListView listView = rootView.findViewById(R.id.list);
+        listView.setAdapter(adapter);
+
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Word word = words.get(position);
+                releaseMediaPlayer();
+                if (mAudioFocusRequest == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
+                    mMediaPlayer = MediaPlayer.create(getActivity(), word.getAudioResourceID());
+                    mMediaPlayer.start();
+                    ImageView play = view.findViewById(R.id.play);
+                    play.setImageResource(R.drawable.ic_pause);
+                    mMediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                        @Override
+                        public void onCompletion(MediaPlayer mp) {
+                            play.setImageResource(R.drawable.ic_play);
+                            releaseMediaPlayer();
+                        }
+                    });
+                }
+            }
+        });
+        return rootView;
     }
 }
